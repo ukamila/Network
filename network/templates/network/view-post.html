@@ -1,0 +1,17 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div id="view-post">
+    <p>From:<strong><span id="post-by"></span></strong></p>
+    <p><span id="edit"></span><p></p>
+    <p><strong>Subject: </strong><span id="post-text"></span></p>
+    <p><strong>Timestamp: </strong><span id="post-timestamp"></span></p>
+    <p>           
+        <button class="btn btn-sm btn-outline-primary" id="like" >Like</button>
+    </p>
+    <p>Comment</p>
+</div>
+
+{% endblock %}

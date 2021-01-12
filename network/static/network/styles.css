@@ -1,0 +1,48 @@
+#textbox {
+    height: 80px;
+    margin: 0;
+    display: flex;
+    cursor: pointer;
+    width: 100%;
+}
+
+#save {
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+
+.icon {
+    width:24px;
+    height:24px;
+}
+
+.icon:hover {
+    cursor: pointer;
+}
+
+.posttext {
+    margin: 5px;
+    padding: 2px;
+}
+
+.editpost:hover, .like:hover, .unlike:hover , .should_login:hover{
+    cursor: pointer;
+    color: #1DA4ED;
+}
+
+.editpost {
+    width: min-content;
+    color: #9c18e9;
+}
+
+.postbody{
+    margin-left: 10px;
+}
+
+.like, .unlike {
+    margin-left: 3px;
+}
+
+.should_login {
+    color: darkgoldenrod;
+}

@@ -1,0 +1,86 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div id="all-posts" >
+    <div id="profile_page">
+        <div style="width: 45%; display: table; margin-left: 10px;">
+            <div style="display: table-row">
+                <h3 style="width: 450px; display: table-cell;">{{ profile.username }}</h3>
+                {% if user.is_authenticated and user != profile %}
+                    {% if is_following %}
+                        <a href="{% url 'follow' profile %}"><span class="badge badge-secondary">Unfollow</span></a>
+                    {% elif not in_following %}
+                        <a href="{% url 'follow' profile %}"><span class="badge badge-primary">Follow</span></a>
+                    {% endif %}
+                {% endif %}   
+            </div>
+        </div>
+        <div style="width: 35%; display: table; margin-left: 10px;">
+            <div style="display: table-row">
+                <div style="width: 150px; display: table-cell;">Followers:<span>{{ followers }}</span></div>
+                <div style="display: table-cell;">Following:<span>{{ following }}</span></div>
+            </div>
+        </div>
+        {% for post in page_obj %}
+        {% csrf_token %}
+        <div id='{{post.id}}-container' style="margin:10px; padding:3px; padding-bottom:0; border-radius: 5px; border:thin solid black; font-family:Arial, Helvetica, sans-serif;">
+            <p style="text-transform:capitalize; font-size: 20px; margin:0;"><a style="color: rgb(85, 81, 81); " class="nav-link" href="{% url 'profile' post.owner%}">{{post.owner}}</a></p>
+            <div id='{{post.id}}-body' class="postbody">
+                {% if user.is_authenticated and user == post.owner%}
+                    <div class="editpost" id="edit-{{ post.id }}" data-postid="{{ post.id }}">Edit</div>
+                {% endif %}
+                <p style="margin:0;"><span id="post_text-{{ post.id }}" >{{post.text}}</span></p>
+                <p style="margin:0;"><span>{{post.timestamp}}</span></p>
+
+                {% if post in liked_posts %}
+                        
+                    <div class="row unlike" data-postid="{{ post.id }}" data-userid="{{ user.id }}">
+                        <img src="{% static 'network/redheart.png' %}" class="icon posttext" id="heart-{{ post.id }}">
+                        
+                        {% if post.likes.count == 1 %}
+                            <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Like</p><br>
+                        {% else %}
+                            <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Likes</p><br>
+                        {% endif %}
+                    </div>
+
+                {% else %}
+
+                    <div class="row like" data-postid="{{ post.id }}" data-userid="{{ user.id }}">
+                        <img src="{% static 'network/heart.png' %}" class="icon posttext" id="heart-{{ post.id }}">
+                        
+                        {% if post.likes.count == 1 %}
+                            <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Like</p><br>
+                        {% else %}
+                            <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Likes</p><br>
+                        {% endif %}
+                    </div>
+
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <ul class="pagination" style="margin:10px; padding-bottom: 15px; font-size: 20px; font-family: Georgia, 'Times New Roman', Times, serif;">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a href="?page=1">&laquo; first</a></li>
+                <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+                {% endif %}
+        
+                {% if page_obj.has_next %}
+                <li class="page-item"><a href="?page={{ page_obj.next_page_number }}">next</a></li>
+                <li class="page-item"><a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+                {% endif %}
+            </span>
+        </ul>
+    </div>
+</div>
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    
+    <div id="index-view">
+
+        {% if user.is_authenticated%}
+        <div id="new-post" class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light" style="height: 250px;">
+            <h4 style="padding-left: 5px;padding-top: 2px;">New Post</h4>
+            <form action="{% url 'new_post' %}" method="post" id="new-post-form" style="margin-left: 4px; margin-right: 4px;">
+                {% csrf_token %}
+                <textarea class="form-control" id="new-post-body" placeholder="Type Here..." rows="3" name= body></textarea>
+                <p style="margin-top: 10px; margin-left: 4px;">
+                    <button class="btn btn-primary">Post</button>
+                </p>
+            </form>
+        </div>
+        {% else %}
+        <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light" style="height: 250px;">
+              <h1 class="display-4 font-weight-normal">Welcome</h1>
+              <p class="lead font-weight-normal">Log in to write a post.</p>
+              <a class="btn btn-outline-secondary" href="{% url 'login' %}">Login</a>
+        </div>
+        {% endif %}
+
+
+        <div id="all-posts" >
+
+        {% for post in page_obj %}
+        {% csrf_token %} 
+            <div id='{{post.id}}-container' style="margin:10px; padding:3px; padding-bottom:0; border-radius: 5px; border:thin solid black; font-family:Arial, Helvetica, sans-serif;">
+                <p style="text-transform:capitalize; font-size: 20px; margin:0;"><a style="color: rgb(85, 81, 81); " class="nav-link" href="{% url 'profile' post.owner%}">{{post.owner}}</a></p>
+                <div id='{{post.id}}-body' class="postbody">
+                    {% if user.is_authenticated and user == post.owner%}
+                        <div class="editpost" id="edit-{{ post.id }}" data-postid="{{ post.id }}">Edit</div>
+                    {% endif %}
+                    <p style="margin:0;"><span id="post_text-{{ post.id }}" >{{post.text}}</span></p>
+                    <p style="margin:0;"><span>{{post.timestamp}}</span></p>
+
+                    {% if user.is_authenticated %}
+                        {% if post in liked_posts %}
+                        
+                            <div class="row unlike" data-postid="{{ post.id }}" data-userid="{{ user.id }}">
+                                <img src="{% static 'network/redheart.png' %}" class="icon posttext" id="heart-{{ post.id }}">
+                                
+                                {% if post.likes.count == 1 %}
+                                    <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Like</p><br>
+                                {% else %}
+                                    <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Likes</p><br>
+                                {% endif %}
+                            </div>
+
+                        {% else %}
+
+                            <div class="row like" data-postid="{{ post.id }}" data-userid="{{ user.id }}">
+                                <img src="{% static 'network/heart.png' %}" class="icon posttext" id="heart-{{ post.id }}">
+                                
+                                {% if post.likes.count == 1 %}
+                                    <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Like</p><br>
+                                {% else %}
+                                    <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Likes</p><br>
+                                {% endif %}
+                            </div>
+
+                        {% endif %}
+                    {% else %}
+                    <div class="row ">
+                        <img src="{% static 'network/heart.png' %}" class="icon posttext" id="heart-{{ post.id }}">&nbsp;&nbsp;
+                        
+                        {% if post.likes.count == 1 %}
+                            <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Like</p><br>
+                        {% else %}
+                            <p class="text-secondary posttext" id="likes-{{ post.id }}">{{ post.likes.count }} Likes</p><br>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <p><a class=" should_login " style="margin-left: 5px;" href="{% url 'login' %}">Log in</a> to like this and other posts.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+            <nav aria-label="Post page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ posts.previous_page_number }}" tabindex="-1">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                {% endif %}
+        
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+            </nav>
+
+        </div>
+    </div>
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
+
+{% endblock %}
